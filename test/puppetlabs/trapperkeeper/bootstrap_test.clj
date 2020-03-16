@@ -1,5 +1,4 @@
 (ns puppetlabs.trapperkeeper.bootstrap-test
-  (:import (java.io StringReader))
   (:require [clojure.test :refer :all]
             [clojure.java.io :refer [file] :as io]
             [slingshot.slingshot :refer [try+]]
@@ -14,7 +13,10 @@
             [puppetlabs.trapperkeeper.examples.bootstrapping.test-services :refer [test-fn test-fn-two test-fn-three hello-world]]
             [schema.test :as schema-test]
             [me.raynes.fs :as fs]
-            [clojure.string :as string]))
+            [clojure.string :as string])
+  (:import
+   (clojure.lang ExceptionInfo)
+   (java.io StringReader)))
 
 (use-fixtures
  :once
@@ -107,8 +109,8 @@
       (testing "Bad line in bootstrap config file"
         (let [bootstrap-config "./dev-resources/bootstrapping/cli/invalid_entry_bootstrap.cfg"]
           (is (thrown-with-msg?
-               IllegalArgumentException
-               #"(?is)Invalid line in bootstrap.*This is not a legit line"
+               ExceptionInfo
+               #"(?is)Invalid bootstrap config line: \"This is not a legit line.\""
                (parse-and-bootstrap bootstrap-config)))))
 
       (testing "Invalid service graph"
